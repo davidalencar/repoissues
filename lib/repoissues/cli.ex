@@ -2,8 +2,6 @@ defmodule Repoissues.CLI do
   @default_issues 5
 
   @moduledoc """
-  Handle the command line parsing and the dispath to the
-  variues functions that end up generating a table of the
   last _n_ issues in a github project
   """
   def run(argv) do
@@ -32,7 +30,17 @@ defmodule Repoissues.CLI do
     IO.puts("""
     usage: repoissues <user> <project> [count|#{@default_issues}]
     """)
-
     System.halt(0)
+  end
+
+  def process({user, repo, _}) do
+    Repoissues.GithubIssues.fetch(user, repo)
+    |> decode_response()
+  end
+
+  def decode_response({:ok, body}), do: body
+  def decode_response({:error, error}) do
+    IO.puts "Error fetching from Github: #{error["message"]}"
+    System.halt(2)
   end
 end
