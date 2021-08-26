@@ -8,6 +8,7 @@ defmodule Repoissues.CLI do
     argv
     |> parse_args
     |> process
+    |> sort_descending_order
   end
 
   def parse_args(["--help" | _]) do
@@ -42,5 +43,9 @@ defmodule Repoissues.CLI do
   def decode_response({:error, error}) do
     IO.puts "Error fetching from Github: #{error["message"]}"
     System.halt(2)
+  end
+
+  def sort_descending_order(list_of_issues) do
+    Enum.sort(list_of_issues, &(&1["created_at"] >= &2["created_at"]))
   end
 end
