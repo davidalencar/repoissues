@@ -24,6 +24,14 @@ defmodule CliTest do
     assert issues == ~w[c b a]
   end
 
+  test "take the correct last count" do
+    count = fake_created_at_list(["a", "b", "c"])
+            |> last(2)
+            |> length
+
+    assert count == 2
+  end
+
   defp fake_created_at_list(values) do
     for value <- values, do: %{"created_at" => value, "other_data" => "xxx"}
   end

@@ -1,9 +1,17 @@
 defmodule Repoissues.CLI do
+  alias Repoissues.TableFormatter, as: TF
   @default_issues 5
 
   @moduledoc """
   last _n_ issues in a github project
   """
+
+  def main(argv) do
+    argv
+    |> parse_args()
+    |> process()
+  end
+
   def run(argv) do
     argv
     |> parse_args
@@ -34,9 +42,12 @@ defmodule Repoissues.CLI do
     System.halt(0)
   end
 
-  def process({user, repo, _}) do
+  def process({user, repo, count}) do
     Repoissues.GithubIssues.fetch(user, repo)
     |> decode_response()
+    |> sort_descending_order()
+    |> last(count)
+    |>TF.print_table_for_columns(["numbers", "created_at", "title"])
   end
 
   def decode_response({:ok, body}), do: body
@@ -47,5 +58,10 @@ defmodule Repoissues.CLI do
 
   def sort_descending_order(list_of_issues) do
     Enum.sort(list_of_issues, &(&1["created_at"] >= &2["created_at"]))
+  end
+
+  def last(list, count) do
+    Enum.take(list, count)
+    
   end
 end
