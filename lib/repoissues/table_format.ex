@@ -21,7 +21,16 @@ defmodule Repoissues.TableFormatter do
   
   def printable(str) when is_binary(str), do: str
   def printable(str), do: to_string(str)
- 
+
+  @doc """
+  Given a list containing sublist, where each sublist contains data for
+  a colum, return a list containing the maximum width of eeach colum.
+
+  ##Exemple
+  iex> data = [["cat", "wambat", "elk"], ["mongoose", "ant", "gnu"]]
+  iex> Repoissues.TableFormatter.widths_of(data)
+  [6,8]
+  """
   def widths_of(columns) do
     for column <- columns, do: column |> map(&String.length/1) |> max
   end
